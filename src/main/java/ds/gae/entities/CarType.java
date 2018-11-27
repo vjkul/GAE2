@@ -1,5 +1,6 @@
 package ds.gae.entities;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ import javax.persistence.OneToMany;
 import com.google.appengine.api.datastore.Key;
 
 @Entity
-public class CarType {
+public class CarType implements Serializable{
     
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

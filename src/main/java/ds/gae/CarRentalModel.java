@@ -230,7 +230,7 @@ public class CarRentalModel {
     				"SELECT crc.carTypes FROM CarRentalCompany crc WHERE crc.name = :crcName"
     			).setParameter("crcName", crcName).getResultList().get(0);
     	em.close();
-    	
+
         return query.values();
     }
 	
