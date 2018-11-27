@@ -1,9 +1,14 @@
 package ds.gae.entities;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -20,6 +25,10 @@ public class CarType {
     private double rentalPricePerDay;
     //trunk space in liters
     private float trunkSpace;
+    
+    @OneToMany(cascade=CascadeType.ALL)
+    private Set<Car> cars = new HashSet<>();
+    
     
     /***************
 	 * CONSTRUCTOR *
@@ -61,6 +70,9 @@ public class CarType {
     	return trunkSpace;
     }
     
+    public Set<Car> getCars() {
+    	return this.cars;
+    }
     /*************
      * TO STRING *
      *************/
@@ -94,5 +106,9 @@ public class CarType {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+	
+	public void addCar(Car car) {
+		cars.add(car);
 	}
 }

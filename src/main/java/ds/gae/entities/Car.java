@@ -28,8 +28,8 @@ public class Car {
     private int id;
 	
 
-    @ManyToOne(cascade=CascadeType.ALL)
-    private CarType type;
+//    @ManyToOne(cascade=CascadeType.ALL)
+    private String typeId;
 	
 
 	@OneToMany(cascade=CascadeType.ALL)
@@ -45,7 +45,7 @@ public class Car {
     
     public Car(int uid, CarType type) {
     	this.id = uid;
-        this.type = type;
+        this.typeId = type.getName();
         this.reservations = new HashSet<Reservation>();
     }
 
@@ -66,8 +66,8 @@ public class Car {
      * CAR TYPE *
      ************/
     
-    public CarType getType() {
-        return type;
+    public String getType() {
+        return typeId;
     }
 
     /****************

@@ -279,17 +279,24 @@ public class CarRentalModel {
 		EntityManager em = EMF.get().createEntityManager();
 		
 		@SuppressWarnings("unchecked")
-		Set<Car> query = (Set<Car>)em.createQuery(
-					"SELECT crc.cars FROM CarRentalCompany crc WHERE crc.name = :crcName"
-				).setParameter("crcName", crcName).getResultList().get(0);
-		em.close();
+		List<Map<String,CarType>> carTypes = em.createQuery(
+					"SELECT crc.carTypes FROM CarRentalCompany crc WHERE crc.name = :crcName"
+				).setParameter("crcName", crcName).getResultList();
+		
+		Map<String,CarType> carTypes2 = null;
+		for (Map<String,CarType> el : carTypes) {
+			carTypes2 = new HashMap<>(el);
+		}
 		List<Car> output = new ArrayList<>();
-		for (Car c : query) {
-			if (c.getType().equals(carType)) {
-				output.add(c);
+		for (CarType ct : carTypes2.values()) {
+			if (ct.getName().equals(carType.getName())) {
+				for (Car c : ct.getCars()) {
+					output.add(c);
+				}
+				break;
 			}
 		}
-		
+		em.close();
 		return output;
 	}
 

@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -51,7 +53,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 
 		try {
         	
-            Set<Car> cars = loadData(name, datafile);
+            Map<String,CarType> cars = loadData(name, datafile);
             CarRentalCompany company = new CarRentalCompany(name, cars);
             
     		// FIXME: use persistence instead            
@@ -65,10 +67,10 @@ public class CarRentalServletContextListener implements ServletContextListener {
         }
 	}
 	
-	public static Set<Car> loadData(String name, String datafile) throws NumberFormatException, IOException {
+	public static Map<String,CarType> loadData(String name, String datafile) throws NumberFormatException, IOException {
 		// FIXME: adapt the implementation of this method to your entity structure
 		
-		Set<Car> cars = new HashSet<Car>();
+		Map<String,CarType> carTypes = new HashMap<>();
 		int carId = 1;
 
 		//open file from jar
@@ -89,13 +91,14 @@ public class CarRentalServletContextListener implements ServletContextListener {
 					Float.parseFloat(csvReader.nextToken()),
 					Double.parseDouble(csvReader.nextToken()),
 					Boolean.parseBoolean(csvReader.nextToken()));
+			carTypes.put(type.getName(), type);
 			//create N new cars with given type, where N is the 5th field
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-				cars.add(new Car(carId++, type));
+				type.addCar(new Car(carId++, type));
 			}
 		}
 
-		return cars;
+		return carTypes;
 	}
 
 	@Override
