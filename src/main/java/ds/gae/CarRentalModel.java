@@ -41,15 +41,19 @@ public class CarRentalModel {
 	 */
 	public Set<String> getCarTypesNames(String crcName) {
 		EntityManager em = EMF.get().createEntityManager();
-		try {
-			@SuppressWarnings("unchecked")
-			List<String> query = em.createQuery(
-					"SELECT ct.name FROM CarType ct"
-					).getResultList();
-			return new HashSet<String>(query);
-		} finally {
-			em.close(); 
-		}	
+		
+		@SuppressWarnings("unchecked")
+		List<Map<String,CarType>> carTypes = em.createQuery(
+					"SELECT crc.carTypes FROM CarRentalCompany crc WHERE crc.name = :crcName"
+				).setParameter("crcName", crcName).getResultList();
+		
+		Set<String> carTypes2 = null;
+		for (Map<String,CarType> el : carTypes) {
+			carTypes2 = new HashSet<>(el.keySet());
+			break;
+		}
+		em.close();
+		return carTypes2;	
 	}
 
     /**
@@ -223,15 +227,31 @@ public class CarRentalModel {
     public Collection<CarType> getCarTypesOfCarRentalCompany(String crcName) {
 		// FIXME: use persistence instead
 
-    	EntityManager em = EMF.get().createEntityManager();
+		EntityManager em = EMF.get().createEntityManager();
+		
+		@SuppressWarnings("unchecked")
+		List<Map<String,CarType>> carTypes = em.createQuery(
+					"SELECT crc.carTypes FROM CarRentalCompany crc WHERE crc.name = :crcName"
+				).setParameter("crcName", crcName).getResultList();
+		
+		Set<CarType> carTypes2 = null;
+		for (Map<String,CarType> el : carTypes) {
+			carTypes2 = new HashSet<>(el.values());
+			break;
+		}
+		em.close();
+		return carTypes2;
     	
-    	@SuppressWarnings("unchecked")
-		Map<String,CarType> query = (Map<String,CarType>)em.createQuery(
-    				"SELECT crc.carTypes FROM CarRentalCompany crc WHERE crc.name = :crcName"
-    			).setParameter("crcName", crcName).getResultList().get(0);
-    	em.close();
-
-        return query.values();
+    	
+//    	EntityManager em = EMF.get().createEntityManager();
+//    	
+//    	@SuppressWarnings("unchecked")
+//		Map<String,CarType> query = (Map<String,CarType>)em.createQuery(
+//    				"SELECT crc.carTypes FROM CarRentalCompany crc WHERE crc.name = :crcName"
+//    			).setParameter("crcName", crcName).getResultList().get(0);
+//    	em.close();
+//
+//        return query.values();
     }
 	
     /**
