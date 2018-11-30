@@ -2,6 +2,7 @@ package ds.gae;
 
 import java.io.IOException;
 
+import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,4 +16,7 @@ public class Worker extends HttpServlet {
 			throws ServletException, IOException {
 		super.doPost(req, resp);		
 	}
+	
+	
+	
 }

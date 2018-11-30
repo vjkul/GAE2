@@ -1,6 +1,8 @@
 package ds.gae.servlets;
 
 import java.io.IOException;
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,6 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+
+import ds.gae.ConfirmQuotesDeferredTask;
 import ds.gae.CarRentalModel;
 import ds.gae.ReservationException;
 import ds.gae.entities.Quote;
@@ -37,11 +44,14 @@ public class ConfirmQuotesServlet extends HttpServlet {
 			
 			session.setAttribute("quotes", new HashMap<String, ArrayList<Quote>>());
 			
+			Queue queue = QueueFactory.getDefaultQueue();			
+			TaskOptions options = TaskOptions.Builder.withPayload(new ConfirmQuotesDeferredTask(qs));
+			queue.add(options);
 			// TODO
 			// If you wish confirmQuotesReply.jsp to be shown to the client as
 			// a response of calling this servlet, please replace the following line 
 			// with resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
-			resp.sendRedirect(JSPSite.CREATE_QUOTES.url());
+			resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
 		} catch (ReservationException e) {
 			session.setAttribute("errorMsg", ViewTools.encodeHTML(e.getMessage()));
 			resp.sendRedirect(JSPSite.RESERVATION_ERROR.url());				
