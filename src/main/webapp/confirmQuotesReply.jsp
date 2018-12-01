@@ -53,8 +53,8 @@ for (JSPSite site : JSPSite.publiclyLinkedValues()) {
 				<H2>Reply</H2>
 				<div class="group">
 					<p>
-					TODO: Here you can give some information to client who is currently 
-							logged in as user <%=renter%>.
+					Your quotes have been added to the queue and will be processed shortly. 
+					If an error occurs you will be notified.
 					</p>
 				</div>
 			</div>

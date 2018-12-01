@@ -17,10 +17,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 
 import ds.gae.ConfirmQuotesDeferredTask;
-import ds.gae.CarRentalModel;
-import ds.gae.ReservationException;
 import ds.gae.entities.Quote;
-import ds.gae.view.ViewTools;
 import ds.gae.view.JSPSite;
 
 @SuppressWarnings("serial")
@@ -34,27 +31,18 @@ public class ConfirmQuotesServlet extends HttpServlet {
 		HttpSession session = req.getSession();
 		HashMap<String, ArrayList<Quote>> allQuotes = (HashMap<String, ArrayList<Quote>>) session.getAttribute("quotes");
 
-		try {
-			ArrayList<Quote> qs = new ArrayList<Quote>();
-			
-			for (String crcName : allQuotes.keySet()) {
-				qs.addAll(allQuotes.get(crcName));
-			}
-			CarRentalModel.get().confirmQuotes(qs);
-			
-			session.setAttribute("quotes", new HashMap<String, ArrayList<Quote>>());
-			
-			Queue queue = QueueFactory.getDefaultQueue();			
-			TaskOptions options = TaskOptions.Builder.withPayload(new ConfirmQuotesDeferredTask(qs));
-			queue.add(options);
-			// TODO
-			// If you wish confirmQuotesReply.jsp to be shown to the client as
-			// a response of calling this servlet, please replace the following line 
-			// with resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
-			resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
-		} catch (ReservationException e) {
-			session.setAttribute("errorMsg", ViewTools.encodeHTML(e.getMessage()));
-			resp.sendRedirect(JSPSite.RESERVATION_ERROR.url());				
+		ArrayList<Quote> qs = new ArrayList<Quote>();
+		
+		for (String crcName : allQuotes.keySet()) {
+			qs.addAll(allQuotes.get(crcName));
 		}
+		
+		session.setAttribute("quotes", new HashMap<String, ArrayList<Quote>>());
+		
+		Queue queue = QueueFactory.getDefaultQueue();			
+		TaskOptions options = TaskOptions.Builder.withPayload(new ConfirmQuotesDeferredTask(qs));
+		queue.add(options);
+		resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
+
 	}
 }
