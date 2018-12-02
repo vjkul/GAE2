@@ -1,11 +1,8 @@
 package ds.gae.servlets;
 
 import java.io.IOException;
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,4 +42,7 @@ public class ConfirmQuotesServlet extends HttpServlet {
 		resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
 
 	}
+	
+
+	
 }
