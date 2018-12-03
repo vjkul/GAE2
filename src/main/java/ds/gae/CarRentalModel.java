@@ -15,6 +15,7 @@ import javax.persistence.Query;
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
+import ds.gae.entities.FailedQ;
 import ds.gae.entities.Quote;
 import ds.gae.entities.Reservation;
 import ds.gae.entities.ReservationConstraints;
@@ -150,11 +151,20 @@ public class CarRentalModel {
 			}
 			return reservations;
 		} catch (ReservationException e) {
-			for (Reservation res : reservations) {
+//			for (Reservation res : reservations) {
+//				EntityManager em = EMF.get().createEntityManager();
+//				try {
+//					CarRentalCompany crc = em.find(CarRentalCompany.class, res.getRentalCompany());
+//					crc.cancelReservation(res);
+//				} finally {
+//					em.close();
+//				}
+//			}
+			for (Quote q : quotes) {
 				EntityManager em = EMF.get().createEntityManager();
 				try {
-					CarRentalCompany crc = em.find(CarRentalCompany.class, res.getRentalCompany());
-					crc.cancelReservation(res);
+					FailedQ f = new FailedQ(q);
+					em.persist(f);
 				} finally {
 					em.close();
 				}
@@ -196,6 +206,22 @@ public class CarRentalModel {
 		}
     }
     
+    
+    public List<FailedQ> getFailedQuotes(String renter) {
+    	EntityManager em = EMF.get().createEntityManager();
+    	System.out.println("HIER");
+    	System.out.println(renter);
+    	@SuppressWarnings("unchecked")
+		List<FailedQ> query = em.createQuery(
+    				"SELECT q FROM FailedQ q WHERE q.carRenter = :renter"
+    			).setParameter("renter", renter).getResultList();
+    	em.close();
+    	System.out.println("START");
+    	for (Quote q : query) {
+    		System.out.println(q.toString());
+    	}
+    	return query;
+    }
     
 	/**
 	 * Get all reservations made by the given car renter.

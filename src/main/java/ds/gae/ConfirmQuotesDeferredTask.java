@@ -1,36 +1,25 @@
 package ds.gae;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletResponse;
-
 import com.google.appengine.api.taskqueue.DeferredTask;
 
-import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.Quote;
-import ds.gae.servlets.ReportErrorServlet;
+
 
 public class ConfirmQuotesDeferredTask implements DeferredTask {
 
 	
 
-	private static final long serialVersionUID = 1L;
-	private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
+//	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger(ConfirmQuotesDeferredTask.class.getName());
 	
 	public List<Quote> quotes = new ArrayList<Quote>();
-	public HttpServletResponse response;
+
 	
 	public ConfirmQuotesDeferredTask(List<Quote> quotes) {
 		this.quotes = quotes;
@@ -39,13 +28,25 @@ public class ConfirmQuotesDeferredTask implements DeferredTask {
 	public void run(){
 		try {
 			CarRentalModel.get().confirmQuotes(quotes);
-			new ReportErrorServlet().connectToServer();
+			logger.log(Level.INFO, "Confirming: All of your qoutes are successfully confirmed!");
 		} catch (ReservationException e) {
-			new ReportErrorServlet();
+			logger.log(Level.INFO, "Confirming: One of your qoutes failed to be confirmed. As a result every quote is cancelled.");
 		}
 	}
 	
-	
+	/* LogService ls = LogServiceFactory.getLogService();
+    LogQuery query = withIncludeAppLogs(true).minLogLevel(LogService.LogLevel.FATAL);
+    LogQuery query = LogQuery.Builder.withDefaults();
+    query.includeAppLogs(true).minLogLevel(LogService.LogLevel.INFO);
+    query.majorVersionIds(Arrays.asList("1"));
+    PrintWriter writer = new PrintWriter(out);
+    for (RequestLogs logs : ls.fetch(query)) {
+      for (AppLogLine logLine : logs.getAppLogLines()) {
+        if (logLine.getLogLevel().equals(LogService.LogLevel.INFO)) {
+          	writer.println(logLine);
+        }
+      }
+    } */
 
 
 	

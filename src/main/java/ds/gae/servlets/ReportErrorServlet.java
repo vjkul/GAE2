@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -22,17 +23,51 @@ import ds.gae.entities.Quote;
 import ds.gae.view.JSPSite;
 
 
-public class ReportErrorServlet {
+public class ReportErrorServlet implements Runnable{
+	
+	// verbose mode
+	static final boolean verbose = true;
+	
+	// Client Connection via Socket Class
+	private static Socket connect;
+	
+	public ReportErrorServlet(Socket c) {
+		connect = c;
+	}
 	
 	public static void main(String[] args) {
-        connectToServer();
+		try {
+			ServerSocket serverConnect = new ServerSocket(9090, 0, InetAddress.getLoopbackAddress());
+			System.out.println("Server started.\nListening for connections on port : " + " ...\n");
+			
+			// we listen until user halts server execution
+			while (true) {
+				ReportErrorServlet myServer = new ReportErrorServlet(serverConnect.accept());
+				
+				if (verbose) {
+					System.out.println("Connecton opened. (" + new Date() + ")");
+				}
+				
+				
+	            OutputStream outputFromServer = connect.getOutputStream();
+
+	            PrintWriter serverPrintOut = new PrintWriter(new OutputStreamWriter(outputFromServer, "UTF-8"), true);
+
+	            serverPrintOut.println("A qoute failed to confirm, so all qoutes failled to confirm.");
+				
+				// create dedicated thread to manage the client connection
+				Thread thread = new Thread(myServer);
+				thread.start();
+		}
+		
+		} catch (IOException e) {
+			System.err.println("Server Connection error : " + e.getMessage());
+		}
     }
 	
     public static void connectToServer() {
         //Try connect to the server on an unused port eg 9991. A successful connection will return a socket
         try(ServerSocket serverSocket = new ServerSocket(9991, 0, InetAddress.getLoopbackAddress());) {
-        	System.out.println("HALLO");
-        	System.out.println(serverSocket.toString());
             Socket connectionSocket = serverSocket.accept();
 
             //Create Input&Outputstreams for the connection
@@ -60,4 +95,10 @@ public class ReportErrorServlet {
             e.printStackTrace();
         }
     }
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
 }

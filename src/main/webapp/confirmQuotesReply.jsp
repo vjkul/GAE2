@@ -1,3 +1,8 @@
+<%@page import="com.google.appengine.api.log.*"%>
+<%@page import="ds.gae.CarRentalModel"%>
+<%@page import="ds.gae.entities.FailedQ"%>
+<%@page import="java.io.PrintWriter"%>
+<%@page import="java.util.*"%>
 <%@page import="ds.gae.view.JSPSite"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -53,8 +58,17 @@ for (JSPSite site : JSPSite.publiclyLinkedValues()) {
 				<H2>Reply</H2>
 				<div class="group">
 					<p>
-					Your quotes have been added to the queue and will be processed shortly. 
-					If an error occurs you will be notified.
+						<%
+							PrintWriter writer = new PrintWriter(out);
+							List<FailedQ> failedQuotes = CarRentalModel.get().getFailedQuotes(renter);
+							if (failedQuotes.isEmpty() || failedQuotes == null) {
+								writer.println("All quotes have been succesfully confirmed");								
+							}
+							else {
+								writer.println("An error occured when confirming a quote. No qoutes have been confiremed");								
+							}
+							
+							%>
 					</p>
 				</div>
 			</div>

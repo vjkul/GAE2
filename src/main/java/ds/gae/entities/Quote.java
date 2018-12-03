@@ -3,6 +3,7 @@ package ds.gae.entities;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,6 +28,7 @@ public class Quote implements Serializable {
     private String rentalCompany;
     private String carType;
     private double rentalPrice;
+    private String failed;
     
     /***************
 	 * CONSTRUCTOR *
@@ -43,6 +45,7 @@ public class Quote implements Serializable {
         this.rentalCompany = rentalCompany;
         this.carType = carType;
         this.rentalPrice = rentalPrice;
+        this.failed = "false";
     }
 
     public Key getKey() {
@@ -72,6 +75,14 @@ public class Quote implements Serializable {
     public String getCarType() {
 		return carType;
 	}
+    
+    public String getFailed() {
+    	return failed;
+    }
+    
+    public void setFailed(String s) {
+    	this.failed = s;
+    }
     
     /*************
      * TO STRING *
