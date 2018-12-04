@@ -18,10 +18,10 @@ public class SendEmail {
 		  Message msg = new Message();
 		  msg.setSender("vincentjanssen95@gmail.com");
 		  msg.setTo("client@example.com");
-		  msg.setSubject(subject);
-
+		  msg.setSubject(subject);  
 		  msg.setTextBody(body);
 		  ms.send(msg);
+		  System.out.println("Body: " + msg.getTextBody());
 		} catch (UnsupportedEncodingException e) {
 		  // ...
 		} catch (IOException e) {
