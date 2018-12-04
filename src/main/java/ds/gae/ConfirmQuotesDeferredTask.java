@@ -24,11 +24,16 @@ public class ConfirmQuotesDeferredTask implements DeferredTask {
 	}
 	@Override
 	public void run(){
+		SendEmail.sendEmail("Your car reservations", "Dear customer, we are processing your bookings");
 		try {
 			CarRentalModel.get().confirmQuotes(quotes);
 			logger.log(Level.INFO, "Confirming: All of your qoutes are successfully confirmed!");
+			SendEmail.sendEmail("Your car reservations", "Dear customer, we are glad to inform you about the successful confirmation of your booking(s).");
+			
 		} catch (ReservationException e) {
 			logger.log(Level.INFO, "Confirming: One of your qoutes failed to be confirmed. As a result every quote is cancelled.");
+			SendEmail.sendEmail("Your car reservations", "Dear customer, an eror occurred while processing your bookings. We encourage you to change the specifications and submit a new request.");
+
 		}
 	}
 	
