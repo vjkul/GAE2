@@ -145,6 +145,7 @@ public class CarRentalModel {
 		// TODO add implementation
     	Map<String, List<Quote>> quotesByCom = quotesByCompany(quotes);
     	List<Reservation> reservations = new ArrayList<Reservation>();
+    	deleteFailedQuotesForRenter(quotes.get(0).getCarRenter());
     	try {
 			for (List<Quote> companyQuotes : quotesByCom.values()) {
 				reservations.addAll(confirmCompanyQuotes(companyQuotes));
@@ -165,6 +166,7 @@ public class CarRentalModel {
 				try {
 					FailedQ f = new FailedQ(q);
 					em.persist(f);
+					break;
 				} finally {
 					em.close();
 				}
@@ -173,7 +175,20 @@ public class CarRentalModel {
 		}
     }
 	
-    private Map<String,List<Quote>> quotesByCompany(List<Quote> quotes) {
+    private void deleteFailedQuotesForRenter(String carRenter) {
+    	EntityManager em = EMF.get().createEntityManager();
+    	try {
+    		em.createQuery(
+    				"DELETE FROM FailedQ q WHERE q.carRenter = :renter"
+    		).setParameter("renter", carRenter);
+    	}
+    	finally {
+    		em.close();
+    	}
+		
+	}
+
+	private Map<String,List<Quote>> quotesByCompany(List<Quote> quotes) {
     	Map<String,List<Quote>> map = new HashMap<>();
     	for (Quote q : quotes) {
     		List<Quote> companyQuotes = map.get(q.getRentalCompany());

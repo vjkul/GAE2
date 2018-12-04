@@ -13,8 +13,6 @@ import ds.gae.entities.Quote;
 
 public class ConfirmQuotesDeferredTask implements DeferredTask {
 
-	
-
 //	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(ConfirmQuotesDeferredTask.class.getName());
 	
