@@ -150,6 +150,15 @@ public class CarRentalModel {
 			}
 			return reservations;
 		} catch (ReservationException e) {
+			for (Reservation res : reservations) {
+				EntityManager em = EMF.get().createEntityManager();
+				try {
+					CarRentalCompany crc = em.find(CarRentalCompany.class, res.getRentalCompany());
+					crc.cancelReservation(res);
+				} finally {
+					em.close(); 
+				}
+			}
 			throw e;
 		}
     }
