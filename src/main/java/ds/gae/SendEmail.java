@@ -1,44 +1,33 @@
 package ds.gae;
 //File Name SendEmail.java
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.activation.*;
+
+import com.google.appengine.api.mail.MailService;
+import com.google.appengine.api.mail.MailService.Message;
+import com.google.appengine.api.mail.MailServiceFactory;
 
 public class SendEmail {
 
-public void sendEmail(String subject, String body) {    
-   String to = "vincentjanssen95@gmail.com";
-   String from = "charlesvandamme2@gmail.com";
-   String host = "localhost";
+	public static void sendEmail(String subject, String body) {    
+		MailServiceFactory msf = new MailServiceFactory();
+		MailService ms = msf.getMailService();
+		try {
+		  Message msg = new Message();
+		  msg.setSender("vincentjanssen95@gmail.com");
+		  msg.setTo("client@example.com");
+		  msg.setSubject(subject);
 
-   Properties properties = System.getProperties();
-
-   properties.setProperty("mail.smtp.host", host);
-
-   Session session = Session.getDefaultInstance(properties);
-
-   try {
-      // Create a default MimeMessage object.
-      MimeMessage message = new MimeMessage(session);
-
-      // Set From: header field of the header.
-      message.setFrom(new InternetAddress(from));
-
-      // Set To: header field of the header.
-      message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-
-      
-      message.setSubject(subject);
-
-      message.setText(body);
-
-      // Send message
-      Transport.send(message);
-      System.out.println("Sent message successfully....");
-   } catch (MessagingException mex) {
-      mex.printStackTrace();
-   }
-}
+		  msg.setTextBody(body);
+		  ms.send(msg);
+		} catch (UnsupportedEncodingException e) {
+		  // ...
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }

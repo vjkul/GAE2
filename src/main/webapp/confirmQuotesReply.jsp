@@ -1,6 +1,4 @@
 <%@page import="com.google.appengine.api.log.*"%>
-<%@page import="ds.gae.CarRentalModel"%>
-<%@page import="ds.gae.entities.FailedQ"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="java.util.*"%>
 <%@page import="ds.gae.view.JSPSite"%>
@@ -58,17 +56,7 @@ for (JSPSite site : JSPSite.publiclyLinkedValues()) {
 				<H2>Reply</H2>
 				<div class="group">
 					<p>
-						<%
-							PrintWriter writer = new PrintWriter(out);
-							List<FailedQ> failedQuotes = CarRentalModel.get().getFailedQuotes(renter);
-							if (failedQuotes.isEmpty() || failedQuotes == null) {
-								writer.println("All quotes have been succesfully confirmed");								
-							}
-							else {
-								writer.println("An error occured when confirming a quote. No qoutes have been confiremed");								
-							}
-							
-							%>
+						We will keep you posted by email.
 					</p>
 				</div>
 			</div>

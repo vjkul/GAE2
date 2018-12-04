@@ -32,25 +32,9 @@ public class ConfirmQuotesDeferredTask implements DeferredTask {
 			
 		} catch (ReservationException e) {
 			logger.log(Level.INFO, "Confirming: One of your qoutes failed to be confirmed. As a result every quote is cancelled.");
-			SendEmail.sendEmail("Your car reservations", "Dear customer, an eror occurred while processing your bookings. We encourage you to change the specifications and submit a new request.");
+			SendEmail.sendEmail("Your car reservations", "Dear customer, an eror occurred while processing your bookings. We encourage you to change the specifications and submit a new request."
+					+ "The following quote could not be confirmed: " + e.getMessage());
 
 		}
 	}
-	
-	/* LogService ls = LogServiceFactory.getLogService();
-    LogQuery query = withIncludeAppLogs(true).minLogLevel(LogService.LogLevel.FATAL);
-    LogQuery query = LogQuery.Builder.withDefaults();
-    query.includeAppLogs(true).minLogLevel(LogService.LogLevel.INFO);
-    query.majorVersionIds(Arrays.asList("1"));
-    PrintWriter writer = new PrintWriter(out);
-    for (RequestLogs logs : ls.fetch(query)) {
-      for (AppLogLine logLine : logs.getAppLogLines()) {
-        if (logLine.getLogLevel().equals(LogService.LogLevel.INFO)) {
-          	writer.println(logLine);
-        }
-      }
-    } */
-
-
-	
 }

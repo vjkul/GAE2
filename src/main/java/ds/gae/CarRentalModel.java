@@ -15,7 +15,6 @@ import javax.persistence.Query;
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
-import ds.gae.entities.FailedQ;
 import ds.gae.entities.Quote;
 import ds.gae.entities.Reservation;
 import ds.gae.entities.ReservationConstraints;
@@ -99,8 +98,8 @@ public class CarRentalModel {
     	try {
     		CarRentalCompany crc = em.find(CarRentalCompany.class, company);
     		return crc.createQuote(constraints, renterName);
-    	} catch (ReservationException e) {
-    		throw new ReservationException("Couldn't find company");
+    	} catch (ReservationException e){
+    		throw new ReservationException("No car available that fits the given constraints.");
     	} finally {
     		em.close();
     	}
@@ -145,48 +144,15 @@ public class CarRentalModel {
 		// TODO add implementation
     	Map<String, List<Quote>> quotesByCom = quotesByCompany(quotes);
     	List<Reservation> reservations = new ArrayList<Reservation>();
-    	deleteFailedQuotesForRenter(quotes.get(0).getCarRenter());
     	try {
 			for (List<Quote> companyQuotes : quotesByCom.values()) {
 				reservations.addAll(confirmCompanyQuotes(companyQuotes));
 			}
 			return reservations;
 		} catch (ReservationException e) {
-//			for (Reservation res : reservations) {
-//				EntityManager em = EMF.get().createEntityManager();
-//				try {
-//					CarRentalCompany crc = em.find(CarRentalCompany.class, res.getRentalCompany());
-//					crc.cancelReservation(res);
-//				} finally {
-//					em.close();
-//				}
-//			}
-			for (Quote q : quotes) {
-				EntityManager em = EMF.get().createEntityManager();
-				try {
-					FailedQ f = new FailedQ(q);
-					em.persist(f);
-					break;
-				} finally {
-					em.close();
-				}
-			}
 			throw e;
 		}
     }
-	
-    private void deleteFailedQuotesForRenter(String carRenter) {
-    	EntityManager em = EMF.get().createEntityManager();
-    	try {
-    		em.createQuery(
-    				"DELETE FROM FailedQ q WHERE q.carRenter = :renter"
-    		).setParameter("renter", carRenter);
-    	}
-    	finally {
-    		em.close();
-    	}
-		
-	}
 
 	private Map<String,List<Quote>> quotesByCompany(List<Quote> quotes) {
     	Map<String,List<Quote>> map = new HashMap<>();
@@ -204,10 +170,12 @@ public class CarRentalModel {
     private List<Reservation> confirmCompanyQuotes(List<Quote> companyQuotes) throws ReservationException {
     	EntityManager em = EMF.get().createEntityManager();
 		EntityTransaction et = em.getTransaction();
+		String quoteInfo = null;
 		try {
 			et.begin();
 			List<Reservation> reservations = new ArrayList<>();
 			for (Quote q : companyQuotes) {
+				quoteInfo = q.toString();
 				CarRentalCompany crc = em.find(CarRentalCompany.class, q.getRentalCompany());
 				reservations.add(crc.confirmQuote(q));
 			}
@@ -215,27 +183,10 @@ public class CarRentalModel {
 			return reservations;
 		} catch (ReservationException e) {
 			et.rollback();
-			throw new ReservationException("Couldn't confirm the list of quotes for this company");
+			throw new ReservationException(quoteInfo);
 		} finally {
 			em.close();
 		}
-    }
-    
-    
-    public List<FailedQ> getFailedQuotes(String renter) {
-    	EntityManager em = EMF.get().createEntityManager();
-    	System.out.println("HIER");
-    	System.out.println(renter);
-    	@SuppressWarnings("unchecked")
-		List<FailedQ> query = em.createQuery(
-    				"SELECT q FROM FailedQ q WHERE q.carRenter = :renter"
-    			).setParameter("renter", renter).getResultList();
-    	em.close();
-    	System.out.println("START");
-    	for (Quote q : query) {
-    		System.out.println(q.toString());
-    	}
-    	return query;
     }
     
 	/**
@@ -379,8 +330,6 @@ public class CarRentalModel {
 			em.persist(company);
 
 		} finally {
-			//If I close the EntityManager I will get an com.google.appengine.datanucleus.EntityUtils$ChildWithoutParentException
-			//exception. If I don't close the EntityManager I don't get this error...
 			em.close();
 		}
 		
